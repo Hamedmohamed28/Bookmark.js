@@ -1,168 +1,92 @@
-var siteName = document.getElementById("bookmarkName");
-var siteURL = document.getElementById("bookmarkURL");
-var submitBtn = document.getElementById("submitBtn");
-var tableContent = document.getElementById("tableContent");
-var deleteBtns;
-var visitBtns;
-var closeBtn = document.getElementById("closeBtn");
-var boxModal = document.querySelector(".box-info");
-var bookmarks = [];
 
-if (localStorage.getItem("bookmarksList")) {
-  bookmarks = JSON.parse(localStorage.getItem("bookmarksList"));
-  for (var x = 0; x < bookmarks.length; x++) {
-    displayBookmark(x);
-  }
-}
+/*leftmenu*/
 
+$(".openNav").click(function(){
+    $("#leftMenu").animate({ width:'250px'},50)
+   $("#home-content").animate({marginLeft :'250px'},50)
+})
 
-function displayBookmark(indexOfWebsite) {
-  var userURL = bookmarks[indexOfWebsite].siteURL;
-  var httpsRegex = /^https?:\/\//g;
-  if (httpsRegex.test(userURL)) {
-    validURL = userURL;
-    fixedURL = validURL
-      .split("")
-      .splice(validURL.match(httpsRegex)[0].length)
-      .join("");
-  } else {
-    var fixedURL = userURL;
-    validURL = `https://${userURL}`;
-  }
-  var newBookmark = `
-              <tr>
-                <td>${indexOfWebsite + 1}</td>
-                <td>${bookmarks[indexOfWebsite].siteName}</td>              
-                <td>
-                  <button class="btn btn-visit" data-index="${indexOfWebsite}">
-                    <i class="fa-solid fa-eye pe-2"></i>Visit
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-delete pe-2" data-index="${indexOfWebsite}">
-                    <i class="fa-solid fa-trash-can"></i>
-                    Delete
-                  </button>
-                </td>
-            </tr>
-            `;
-  tableContent.innerHTML += newBookmark;
-
-  deleteBtns = document.querySelectorAll(".btn-delete");
-  if (deleteBtns) {
-    for (var j = 0; j < deleteBtns.length; j++) {
-      deleteBtns[j].addEventListener("click", function (e) {
-        deleteBookmark(e);
-      });
-    }
-  }
-
-
-  visitBtns = document.querySelectorAll(".btn-visit");
-  if (visitBtns) {
-    for (var l = 0; l < visitBtns.length; l++) {
-      visitBtns[l].addEventListener("click", function (e) {
-        visitWebsite(e);
-      });
-    }
-  }
-}
+$(".closebtn").click(function(){
+    $("#leftMenu").animate({ width:'0px'},50)
+   $("#home-content").animate({marginLeft :'0px'},50)
+})
 
 
 
-function clearInput() {
-  siteName.value = "";
-  siteURL.value = "";
-}
+/*scrollmenu*/
+$("#leftMenu a").click(function(){
+    
+    var sectionId= $(this).attr("href");
+    
+    var positionOfSection = $(sectionId).offset().top;
+    
+    $("html , body").animate({scrollTop:positionOfSection},2000);
+    
+})
 
 
-function capitalize(str) {
-  let strArr = str.split("");
-  strArr[0] = strArr[0].toUpperCase();
-  return strArr.join("");
-}
+
+/*Accordion*/
 
 
-submitBtn.addEventListener("click", function () {
-  if (
-    siteName.classList.contains("is-valid") &&
-    siteURL.classList.contains("is-valid")
-  ) {
-    var bookmark = {
-      siteName: capitalize(siteName.value),
-      siteURL: siteURL.value,
-    };
-    bookmarks.push(bookmark);
-    localStorage.setItem("bookmarksList", JSON.stringify(bookmarks));
-    displayBookmark(bookmarks.length - 1);
-    clearInput();
-    siteName.classList.remove("is-valid");
-    siteURL.classList.remove("is-valid");
-  } else {
-    boxModal.classList.remove("d-none");
-  }
+$('#sliderDown .toggle').click(function(){
+    $('.inner').not($(this).next()).slideUp(500);
+    $(this).next().slideToggle(500);
 });
 
 
-function deleteBookmark(e) {
-  tableContent.innerHTML = "";
-  var deletedIndex = e.target.dataset.index;
-  bookmarks.splice(deletedIndex, 1);
-  for (var k = 0; k < bookmarks.length; k++) {
-    displayBookmark(k);
+
+/*counter*/
+
+
+window.onload = function() {
+   
+    countDownToTime("10 october 2023 7:40:00");
   }
-  localStorage.setItem("bookmarksList", JSON.stringify(bookmarks));
-}
+
+  function countDownToTime(countTo) {
+  
+        let futureDate = new Date(countTo);
+    futureDate = (futureDate.getTime()/1000);
+
+    let now = new Date();
+    now = (now.getTime()/1000);
+
+    timeDifference = (futureDate- now);
+        
+   let days = Math.floor( timeDifference / (24*60*60));
+   let hours = Math.floor((timeDifference - (days * (24*60*60))) / 3600);
+   let mins = Math.floor((timeDifference - (days * (24*60*60)) - (hours * 3600 )) / 60);
+   let secs = Math.floor((timeDifference - (days * (24*60*60)) - (hours * 3600) - (mins * 60)))
 
 
-function visitWebsite(e) {
-  var websiteIndex = e.target.dataset.index;
-  var httpsRegex = /^https?:\/\//;
-  if (httpsRegex.test(bookmarks[websiteIndex].siteURL)) {
-    open(bookmarks[websiteIndex].siteURL);
-  } else {
-    open(`https://${bookmarks[websiteIndex].siteURL}`);
+    $(".days").html(`${days} D`);
+    $(".hours").html(`${hours} h`);
+    $(".minutes").html(`${ mins } m`);
+    $('.seconds').html(`${ secs} s`)
+
+  
+    setInterval(function() {  countDownToTime(countTo); }, 1000);
   }
-}
 
 
-var nameRegex = /^\w{3,}(\s+\w+)*$/;
-var urlRegex = /^(https?:\/\/)?(w{3}\.)?\w+\.\w{2,}\/?(:\d{2,5})?(\/\w+)*$/;
 
-siteName.addEventListener("input", function () {
-  validate(siteName, nameRegex);
+/*textarea*/
+
+var maxLength = 100;
+$('textarea').keyup(function() {
+  var length = $(this).val().length;
+  var AmountLeft = maxLength-length;
+  if(AmountLeft<=0)
+            {
+                 $("#chars").text("your available character finished");
+                
+            }
+        else{
+        
+        $("#chars").text(AmountLeft);
+        }
 });
 
-siteURL.addEventListener("input", function () {
-  validate(siteURL, urlRegex);
-});
-
-function validate(element, regex) {
-  var testRegex = regex;
-  if (testRegex.test(element.value)) {
-    element.classList.add("is-valid");
-    element.classList.remove("is-invalid");
-  } else {
-    element.classList.add("is-invalid");
-    element.classList.remove("is-valid");
-  }
-}
 
 
-function closeModal() {
-  boxModal.classList.add("d-none");
-}
-
-closeBtn.addEventListener("click", closeModal);
-
-document.addEventListener("keydown", function (e) {
-  if (e.key == "Escape") {
-    closeModal();
-  }
-});
-
-document.addEventListener("click", function (e) {
-  if (e.target.classList.contains("box-info")) {
-    closeModal();
-  }
-});
